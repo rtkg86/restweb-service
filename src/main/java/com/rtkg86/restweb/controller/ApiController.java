@@ -16,7 +16,7 @@ public class ApiController {
     @GetMapping("/hello")
     public Map<String, String> hello() {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello from REST API");
+        response.put("message", "Hello Ritika from REST API");
         response.put("status", "success");
         return response;
     }
