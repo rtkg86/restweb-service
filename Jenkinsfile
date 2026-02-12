@@ -21,14 +21,18 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=============== Building project ==============='
-                sh 'mvn clean package -DskipTests'
+                withDockerContainer(image: 'maven:3.9-eclipse-temurin-17') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
         stage('Unit Tests') {
             steps {
                 echo '=============== Running unit tests ==============='
-                sh 'mvn test'
+                withDockerContainer(image: 'maven:3.9-eclipse-temurin-17') {
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
@@ -40,7 +44,9 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 echo '=============== Generating code coverage ==============='
-                sh 'mvn jacoco:report'
+                withDockerContainer(image: 'maven:3.9-eclipse-temurin-17') {
+                    sh 'mvn jacoco:report'
+                }
             }
             post {
                 always {
@@ -57,14 +63,16 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo '=============== Running SonarQube analysis ==============='
-                withSonarQubeEnv('sonarqube-local') {
-                    sh '''
-                        mvn sonar:sonar \
-                            -Dsonar.projectKey=restweb-service \
-                            -Dsonar.sources=src/main/java \
-                            -Dsonar.tests=src/test/java \
-                            -Dsonar.java.binaries=target/classes
-                    '''
+                withDockerContainer(image: 'maven:3.9-eclipse-temurin-17') {
+                    withSonarQubeEnv('sonarqube-local') {
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=restweb-service \
+                                -Dsonar.sources=src/main/java \
+                                -Dsonar.tests=src/test/java \
+                                -Dsonar.java.binaries=target/classes
+                        '''
+                    }
                 }
             }
         }
@@ -104,7 +112,7 @@ pipeline {
     post {
         always {
             echo '=============== Pipeline execution completed ==============='
-            cleanWs()
+            deleteDir()
         }
         success {
             echo '=============== Pipeline succeeded ==============='
