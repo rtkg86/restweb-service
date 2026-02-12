@@ -4,13 +4,11 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         timeout(time: 1, unit: 'HOURS')
+        timestamps()
     }
 
     environment {
-        JAVA_HOME = '/usr/libexec/java_home -v 17'
-        MAVEN_HOME = '/usr/local/opt/maven'
-        SONAR_HOST_URL = 'http://localhost:9000'
-        SONAR_LOGIN = credentials('sqp_437ba26995fcb13f1bbd4ad968d837e8d7e65846')
+        SONAR_HOST_URL = 'http://sonarqube:9000'
     }
 
     stages {
@@ -33,19 +31,42 @@ pipeline {
                 echo '=============== Running unit tests ==============='
                 sh 'mvn test'
             }
+            post {
+                always {
+                    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Code Coverage') {
+            steps {
+                echo '=============== Generating code coverage ==============='
+                sh 'mvn jacoco:report'
+            }
+            post {
+                always {
+                    publishHTML([
+                        reportDir: 'target/site/jacoco',
+                        reportFiles: 'index.html',
+                        reportName: 'Code Coverage Report',
+                        allowMissing: true
+                    ])
+                }
+            }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 echo '=============== Running SonarQube analysis ==============='
-                sh '''
-                    mvn sonar:sonar \
-                        -Dsonar.projectKey=restweb-service \
-                        -Dsonar.sources=src/main/java \
-                        -Dsonar.tests=src/test/java \
-                        -Dsonar.host.url=$SONAR_HOST_URL \
-                        -Dsonar.login=$SONAR_LOGIN
-                '''
+                withSonarQubeEnv('sonarqube-local') {
+                    sh '''
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=restweb-service \
+                            -Dsonar.sources=src/main/java \
+                            -Dsonar.tests=src/test/java \
+                            -Dsonar.java.binaries=target/classes
+                    '''
+                }
             }
         }
 
@@ -63,6 +84,7 @@ pipeline {
             steps {
                 echo '=============== Deploying to staging ==============='
                 sh '''
+                    docker rm -f restweb-service-staging || true
                     docker run -d \
                         --name restweb-service-staging \
                         -p 8080:8080 \
@@ -82,15 +104,8 @@ pipeline {
 
     post {
         always {
-            echo '=============== Collecting test results ==============='
-            junit 'target/surefire-reports/*.xml'
-
-            echo '=============== Publishing code coverage ==============='
-            publishHTML([
-                reportDir: 'target/site/jacoco',
-                reportFiles: 'index.html',
-                reportName: 'Code Coverage Report'
-            ])
+            echo '=============== Pipeline execution completed ==============='
+            cleanWs()
         }
         success {
             echo '=============== Pipeline succeeded ==============='
