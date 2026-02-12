@@ -54,6 +54,13 @@ services:
       - cicd-network
     depends_on:
       - sonarqube
+    user: root
+    command: |
+      bash -c '
+      apt-get update && 
+      apt-get install -y maven &&
+      /usr/local/bin/jenkins.sh
+      '
 
   # Maven Builder (optional - for building without Jenkins)
   maven:
