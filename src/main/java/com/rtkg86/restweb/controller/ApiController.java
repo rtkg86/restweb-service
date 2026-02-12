@@ -39,7 +39,7 @@ public class ApiController {
 
     @GetMapping("/health")
     public Map<String, String> health() {
-        System.out.println("calling health api");
+        System.out.println("Adding logs indicating the health api request");
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP and running !!");
         return response;
