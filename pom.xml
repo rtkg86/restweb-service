@@ -115,5 +115,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Artifact deployment to local Nexus (Path A) -->
+    <distributionManagement>
+        <repository>
+            <id>internal-nexus</id>
+            <name>Internal Nexus Releases</name>
+            <!-- Accessible from Jenkins and Docker via Docker network -->
+            <url>http://nexus:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 </project>
 

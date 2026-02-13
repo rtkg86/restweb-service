@@ -32,6 +32,27 @@ echo ""
 echo "Waiting for services to start..."
 sleep 10
 
+echo ""
+echo "Checking Kubernetes (minikube) setup..."
+
+if command -v minikube &> /dev/null; then
+    echo "✅ Minikube found"
+    # Try to start minikube if not already running
+    if ! minikube status >/dev/null 2>&1; then
+        echo "🚀 Starting Minikube cluster (driver: docker, 2 CPUs, 4GB RAM)..."
+        minikube start --driver=docker --cpus=2 --memory=4096
+    else
+        echo "ℹ️ Minikube already running"
+    fi
+
+    echo ""
+    echo "Current Kubernetes nodes:"
+    kubectl get nodes || echo "⚠️ kubectl not configured for minikube"
+else
+    echo "⚠️ Minikube is not installed. Skipping Kubernetes setup."
+    echo "   Install with: brew install minikube kubectl"
+fi
+
 # Check service status
 echo ""
 echo "╔════════════════════════════════════════════════════════════╗"
@@ -73,6 +94,7 @@ echo "  2. Create a security token in SonarQube"
 echo "  3. Configure Jenkins at http://localhost:8081"
 echo "  4. Add SonarQube token to Jenkins credentials"
 echo "  5. Create a new Pipeline job pointing to your Jenkinsfile"
+echo "  6. (Optional) Deploy app to Kubernetes via minikube (kubectl apply -f k8s/)"
 echo ""
 
 echo "💡 Useful Commands:"
