@@ -7,7 +7,10 @@ pipeline {
     }
 
     environment {
-        SONAR_HOST_URL = 'http://sonarqube:9000'
+        // Default Sonar host (override in Jenkins job if needed)
+        SONAR_HOST_URL = 'http://localhost:9000'
+        // The Jenkins credential ID that stores the Sonar token (create this secret text in Jenkins)
+        SONAR_CREDENTIALS_ID = 'sonar-token'
     }
 
     stages {
@@ -57,13 +60,14 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo '=============== Running SonarQube analysis ==============='
-                withSonarQubeEnv('sonarqube-local') {
+                // Use a Jenkins Credential (secret text) to inject the Sonar token instead of passing it on the command line
+                withCredentials([string(credentialsId: env.SONAR_CREDENTIALS_ID, variable: 'SONAR_TOKEN')]) {
+                    // Run the same mvn command you used locally; token and host come from env/credentials
                     sh '''
-                        mvn sonar:sonar \
-                            -Dsonar.projectKey=restweb-service \
-                            -Dsonar.sources=src/main/java \
-                            -Dsonar.tests=src/test/java \
-                            -Dsonar.java.binaries=target/classes || true
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=restweb-service \
+                          -Dsonar.host.url=${SONAR_HOST_URL} \
+                          -Dsonar.login=${SONAR_TOKEN}
                     '''
                 }
             }
@@ -117,4 +121,3 @@ pipeline {
         }
     }
 }
-
