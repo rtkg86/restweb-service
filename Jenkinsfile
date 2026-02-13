@@ -79,7 +79,25 @@ pipeline {
                 }
             }
             steps {
-                sh "docker build -t restweb-service:${env.BUILD_NUMBER} ."
+                sh """
+                  docker build -t restweb-service:${env.BUILD_NUMBER} .
+                  docker tag restweb-service:${env.BUILD_NUMBER} restweb-service:latest
+                """
+            }
+        }
+        
+        stage('Deploy Container') {
+            when {
+                allOf {
+                    branch 'main'
+                    not { changeRequest() }
+                }
+            }
+            steps {
+                sh """
+                  docker rm -f restweb-service || true
+                  docker run -d --name restweb-service -p 8080:8080 restweb-service:latest
+                """
             }
         }
     }
