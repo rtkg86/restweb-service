@@ -51,11 +51,11 @@ public class ApiControllerTest {
     }
 
     @Test
-    public void testNewFeatureEndpoint_shouldFail() throws Exception {
+    public void testNewFeatureEndpoint() throws Exception {
         mockMvc.perform(get("/api/new-feature"))
                 .andExpect(status().isOk())
-                // Intentionally incorrect expectation to simulate a failing test
-                .andExpect(jsonPath("$.message", equalTo("This is a BROKEN feature")));
+                .andExpect(jsonPath("$.message", equalTo("This is a new feature")))
+                .andExpect(jsonPath("$.status", equalTo("success")));
     }
 }
 
