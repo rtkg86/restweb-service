@@ -44,10 +44,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             when {
-                anyOf {
-                    branch 'main'
-                    changeRequest()
-                }
+                branch 'main'
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
@@ -72,10 +69,7 @@ pipeline {
 
         stage('Quality Gate') {
             when {
-                anyOf {
-                    branch 'main'
-                    changeRequest()
-                }
+                branch 'main'
             }
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
