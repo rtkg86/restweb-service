@@ -46,4 +46,12 @@ public class ApiController {
         response.put("status", "UP");
         return response;
     }
+
+    @GetMapping("/new-feature")
+    public Map<String, String> newFeature() {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "This is a new feature");
+        response.put("status", "success");
+        return response;
+    }
 }

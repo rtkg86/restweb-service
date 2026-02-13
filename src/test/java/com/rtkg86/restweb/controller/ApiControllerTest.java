@@ -49,5 +49,13 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$.status", equalTo("success")))
                 .andExpect(jsonPath("$.received.message", equalTo("test message")));
     }
+
+    @Test
+    public void testNewFeatureEndpoint() throws Exception {
+        mockMvc.perform(get("/api/new-feature"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", equalTo("This is a new feature")))
+                .andExpect(jsonPath("$.status", equalTo("success")));
+    }
 }
 
