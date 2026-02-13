@@ -42,6 +42,7 @@ public class ApiController {
     public Map<String, String> health() {
         Map<String, String> response = new HashMap<>();
         // Return simple UP status expected by unit tests
+        System.out.println("I have added some logs");
         response.put("status", "UP");
         return response;
     }
