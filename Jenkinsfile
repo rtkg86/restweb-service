@@ -43,13 +43,14 @@ pipeline {
                             // Pull Request analysis
                             sh """
                               mvn -B sonar:sonar \\
+                                -Dsonar.login=${SONAR_AUTH_TOKEN} \\
                                 -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
                                 -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \\
                                 -Dsonar.pullrequest.base=${env.CHANGE_TARGET}
                             """
                         } else {
                             // Regular branch analysis (e.g. main)
-                            sh 'mvn -B sonar:sonar'
+                            sh "mvn -B sonar:sonar -Dsonar.login=${SONAR_AUTH_TOKEN}"
                         }
                     }
                 }
