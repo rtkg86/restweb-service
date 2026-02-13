@@ -29,6 +29,15 @@ pipeline {
             }
         }
 
+        stage('Block on Test Failures') {
+            when {
+                expression { currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE' }
+            }
+            steps {
+                error 'JUnit tests failed. Blocking further stages.'
+            }
+        }
+
         stage('SonarQube Analysis') {
             when {
                 anyOf {
