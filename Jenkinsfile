@@ -75,7 +75,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn -B deploy -DskipTests'
+                withMaven(mavenSettingsConfig: 'my-nexus-settings') {
+                    sh 'mvn -B deploy -DskipTests'
+                }
             }
         }
 
@@ -118,5 +120,3 @@ pipeline {
         }
     }
 }
-
-
