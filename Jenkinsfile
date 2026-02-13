@@ -75,8 +75,8 @@ pipeline {
                 }
             }
             steps {
-                withMaven(mavenSettingsConfig: 'my-nexus-settings') {
-                    sh 'mvn -B deploy -DskipTests'
+                configFileProvider([configFile(fileId: 'my-maven-settings', variable: 'MAVEN_SETTINGS_FILE')]) {
+                    sh 'mvn -B deploy -DskipTests -s ${MAVEN_SETTINGS_FILE}'
                 }
             }
         }
