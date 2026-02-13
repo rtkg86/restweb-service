@@ -7,7 +7,7 @@
 
     <groupId>com.rtkg86</groupId>
     <artifactId>restweb-service</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>REST Web Service</name>
@@ -118,12 +118,11 @@
 
     <!-- Artifact deployment to local Nexus (Path A) -->
     <distributionManagement>
-        <repository>
-            <id>internal-nexus</id>
-            <name>Internal Nexus Releases</name>
-            <!-- Accessible from Jenkins and Docker via Docker network -->
-            <url>http://nexus:8081/repository/maven-releases/</url>
-        </repository>
+        <snapshotRepository>
+            <id>internal-nexus-snapshots</id>
+            <name>Internal Nexus Snapshots</name>
+            <url>http://nexus:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 </project>
 
