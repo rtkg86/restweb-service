@@ -75,7 +75,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn -B deploy -DskipTests'
+                sh 'mvn -s /Users/rajat/IdeaProjects/restweb-service/settings.xml -B deploy -DskipTests'
             }
         }
 
