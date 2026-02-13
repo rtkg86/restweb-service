@@ -11,13 +11,22 @@ pipeline {
         SONAR_HOST_URL = 'http://localhost:9000'
         // The Jenkins credential ID that stores the Sonar token (create this secret text in Jenkins)
         SONAR_CREDENTIALS_ID = 'sonar-token'
+        // The Jenkins credential ID used to access the Git repository (create this as 'Username with password' where password is a GitHub PAT)
+        GIT_CREDENTIALS_ID = 'github-credentials'
+        // Git repository URL
+        GIT_REPO_URL = 'https://github.com/rtkg86/restweb-service.git'
+        // Branch to check out (adjust if your repo uses 'master')
+        GIT_BRANCH = 'main'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo '=============== Checking out code ==============='
-                checkout scm
+                // Ensure workspace is clean before attempting to configure remote/origin
+                deleteDir()
+                // Use explicit 'git' step with credentialsId to avoid anonymous access issues
+                git branch: env.GIT_BRANCH, url: env.GIT_REPO_URL, credentialsId: env.GIT_CREDENTIALS_ID
             }
         }
 
