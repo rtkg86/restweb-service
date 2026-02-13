@@ -6,7 +6,8 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+# Use a base image that supports Apple Silicon / ARM64
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /build/target/*.jar app.jar
 EXPOSE 8080
