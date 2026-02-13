@@ -3,7 +3,6 @@ pipeline {
 
     options {
         skipDefaultCheckout()
-        timestamps()
     }
 
     stages {
@@ -39,7 +38,20 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn -B sonar:sonar'
+                    script {
+                        if (env.CHANGE_ID) {
+                            // Pull Request analysis
+                            sh """
+                              mvn -B sonar:sonar \\
+                                -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
+                                -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \\
+                                -Dsonar.pullrequest.base=${env.CHANGE_TARGET}
+                            """
+                        } else {
+                            // Regular branch analysis (e.g. main)
+                            sh 'mvn -B sonar:sonar'
+                        }
+                    }
                 }
             }
         }
