@@ -16,7 +16,8 @@ public class ApiController {
     @GetMapping("/hello")
     public Map<String, String> hello() {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello Ritika from REST API");
+        // Return message expected by unit tests
+        response.put("message", "Hello from REST API");
         response.put("status", "success");
         return response;
     }
@@ -39,10 +40,9 @@ public class ApiController {
 
     @GetMapping("/health")
     public Map<String, String> health() {
-        System.out.println("Adding logs indicating the health api request");
         Map<String, String> response = new HashMap<>();
-        response.put("status", "UP and running !!");
+        // Return simple UP status expected by unit tests
+        response.put("status", "UP");
         return response;
     }
 }
-
