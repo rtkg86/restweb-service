@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        APP_VERSION = '1.0.0'
+    }
+
     options {
         skipDefaultCheckout()
     }
@@ -80,6 +84,18 @@ pipeline {
             }
         }
 
+        stage('Deploy Artifact to Nexus') {
+            when {
+                allOf {
+                    branch 'main'
+                    not { changeRequest() }
+                }
+            }
+            steps {
+                sh 'mvn -B deploy -DskipTests'
+            }
+        }
+
         stage('Build Docker Image') {
             when {
                 allOf {
@@ -89,7 +105,9 @@ pipeline {
             }
             steps {
                 sh """
-                  docker build -t restweb-service:${env.BUILD_NUMBER} .
+                  docker build -f Dockerfile.nexus \\
+                    --build-arg APP_VERSION=${APP_VERSION} \\
+                    -t restweb-service:${env.BUILD_NUMBER} .
                   docker tag restweb-service:${env.BUILD_NUMBER} restweb-service:latest
                 """
             }

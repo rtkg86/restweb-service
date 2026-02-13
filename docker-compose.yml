@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  # Nexus Repository Manager (Maven artifact repository)
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: nexus
+    ports:
+      - "8082:8081"
+    volumes:
+      - nexus_data:/nexus-data
+    networks:
+      - cicd-network
+
   # SonarQube Service
   sonarqube:
     image: sonarqube:lts
@@ -80,6 +91,7 @@ volumes:
   postgres_data:
   jenkins_home:
   maven_cache:
+  nexus_data:
 
 networks:
   cicd-network:

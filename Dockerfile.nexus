@@ -1,0 +1,19 @@
+FROM eclipse-temurin:17-jre
+
+ARG APP_VERSION=1.0.0
+ARG NEXUS_HOST=nexus
+ARG NEXUS_PORT=8081
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download the JAR built and published to Nexus by Jenkins
+RUN curl -fsSL "http://${NEXUS_HOST}:${NEXUS_PORT}/repository/maven-releases/com/rtkg86/restweb/restweb-service/${APP_VERSION}/restweb-service-${APP_VERSION}.jar" -o app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
